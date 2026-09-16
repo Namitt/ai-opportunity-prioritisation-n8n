@@ -1,0 +1,935 @@
+{
+  "name": "AI Opportunity Discovery and Prioritisation",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "const original = $json;\n\nfunction validScore(value) {\n  const number = Number(value);\n  if (!Number.isFinite(number)) return 1;\n  return Math.min(5, Math.max(1, number));\n}\n\nconst strategicAlignment = validScore(original.strategic_alignment);\nconst expectedValue = validScore(original.expected_value);\nconst reach = validScore(original.reach);\nconst evidenceStrength = validScore(original.evidence_strength);\nconst feasibility = validScore(original.feasibility);\nconst risk = validScore(original.risk);\n\nconst priorityScore =\n  strategicAlignment * 0.20 +\n  expectedValue * 0.25 +\n  reach * 0.15 +\n  evidenceStrength * 0.10 +\n  feasibility * 0.15 +\n  (6 - risk) * 0.15;\n\nlet priority = \"Low\";\nif (priorityScore >= 4) priority = \"High\";\nelse if (priorityScore >= 3) priority = \"Medium\";\n\nlet decision = \"Place in backlog\";\n\nif (risk >= 4) {\n  decision = \"Governance review required\";\n} else if (evidenceStrength <= 2) {\n  decision = \"More discovery required\";\n} else if (priorityScore >= 4) {\n  decision = \"Candidate for pilot\";\n} else if (priorityScore >= 3) {\n  decision = \"Proceed to discovery\";\n}\n\nreturn [{\n  json: {\n    ...original,\n    opportunity_id: `AIO-${Date.now()}`,\n    submitted_at: new Date().toISOString(),\n    strategic_alignment: strategicAlignment,\n    expected_value: expectedValue,\n    reach,\n    evidence_strength: evidenceStrength,\n    feasibility,\n    risk,\n    priority_score: Number(priorityScore.toFixed(2)),\n    priority,\n    decision,\n    status: \"Initial assessment completed\"\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        640,
+        96
+      ],
+      "id": "c5bdda22-c529-4baa-af46-77155ef59c18",
+      "name": "Calculate Priority"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list",
+          "cachedResultName": "ai_opportunity_portfolio"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "opportunity_id": "={{ $json.opportunity_id }}",
+            "title": "={{ $json.title }}",
+            "submitted_at": "={{ $json.submitted_at }}",
+            "business_area": "={{ $json.business_area }}",
+            "problem": "={{ $json.problem }}",
+            "desired_outcome": "={{ $json.desired_outcome }}",
+            "expected_value": "={{ $json.expected_value }}",
+            "reach": "={{ $json.reach }}",
+            "evidence_strength": "={{ $json.evidence_strength }}",
+            "feasibility": "={{ $json.feasibility }}",
+            "risk": "={{ $json.risk }}",
+            "priority_score": "={{ $json.priority_score }}",
+            "decision": "={{ $json.decision }}",
+            "recommendation": "={{ $json.recommendation }}",
+            "status": "={{ $json.status }}",
+            "strategic_alignment": "={{ $json.strategic_alignment }}",
+            "priority": "={{ $json.priority }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "opportunity_id",
+              "displayName": "opportunity_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "submitted_at",
+              "displayName": "submitted_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "business_area",
+              "displayName": "business_area",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "problem",
+              "displayName": "problem",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "desired_outcome",
+              "displayName": "desired_outcome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "strategic_alignment",
+              "displayName": "strategic_alignment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "expected_value",
+              "displayName": "expected_value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "reach",
+              "displayName": "reach",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "evidence_strength",
+              "displayName": "evidence_strength",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "feasibility",
+              "displayName": "feasibility",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "risk",
+              "displayName": "risk",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "priority_score",
+              "displayName": "priority_score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "priority",
+              "displayName": "priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "decision",
+              "displayName": "decision",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "recommendation",
+              "displayName": "recommendation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1312,
+        96
+      ],
+      "id": "d3581f39-48cb-46e3-9175-06e038fa2dc9",
+      "name": "Insert row"
+    },
+    {
+      "parameters": {
+        "formTitle": "AI and Innovation Opportunity Intake",
+        "formDescription": "Describe the business or product problem. You do not need to propose an AI solution.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Opportunity Title",
+              "fieldName": "title",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Business Area",
+              "fieldType": "dropdown",
+              "fieldName": "business_area",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Product Management"
+                  },
+                  {
+                    "option": "Engineering & Technology"
+                  },
+                  {
+                    "option": "Learning Content & Curriculum"
+                  },
+                  {
+                    "option": "Data and Analytics"
+                  },
+                  {
+                    "option": "Customer Support"
+                  },
+                  {
+                    "option": "Customer Succes"
+                  },
+                  {
+                    "option": "Sales"
+                  },
+                  {
+                    "option": "Marketing"
+                  },
+                  {
+                    "option": "Operations"
+                  },
+                  {
+                    "option": "Finance"
+                  },
+                  {
+                    "option": "People and HR"
+                  },
+                  {
+                    "option": "Legal and Compliance"
+                  },
+                  {
+                    "option": "Information Security"
+                  },
+                  {
+                    "option": "Research and Innovation"
+                  },
+                  {
+                    "option": "Other"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Problem or Inefficiency",
+              "fieldType": "textarea",
+              "fieldName": "problem",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Current Process",
+              "fieldType": "textarea",
+              "fieldName": "current_process",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Desired Outcome",
+              "fieldType": "textarea",
+              "fieldName": "desired_outcome",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Affected User",
+              "fieldName": "effected_user",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Monthly Volume",
+              "fieldType": "number",
+              "fieldName": "volume"
+            },
+            {
+              "fieldLabel": "Systems Involved",
+              "fieldName": "systems"
+            },
+            {
+              "fieldLabel": "Data Required",
+              "fieldType": "textarea",
+              "fieldName": "data_required"
+            },
+            {
+              "fieldLabel": "Supporting Evidence",
+              "fieldType": "textarea",
+              "fieldName": "supporting_evidence"
+            }
+          ]
+        },
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        -160,
+        96
+      ],
+      "id": "d0e972f8-e382-4755-80ca-1fd438a9d3d4",
+      "name": "Opportunity Intake"
+    },
+    {
+      "parameters": {
+        "text": "=Title: {{ $json.title }}\nBusiness area: {{ $json.business_area }}\nProblem: {{ $json.problem }}\nCurrent process: {{ $json.current_process }}\nDesired outcome: {{ $json.desired_outcome }}\nAffected users: {{ $json.effected_user}}\nMonthly volume: {{ $json.volume }}\nSystems involved: {{ $json.systems }}\nData required: {{ $json.data_required }}\nSupporting evidence: {{ $json.supporting_evidence }}",
+        "schemaType": "fromJson",
+        "jsonSchemaExample": "{\n  \"summary\": \"Concise opportunity statement\",\n  \"opportunity_type\": \"internal_efficiency, product_improvement, or both\",\n  \"strategic_alignment\": 1,\n  \"expected_value\": 1,\n  \"reach\": 1,\n  \"evidence_strength\": 1,\n  \"feasibility\": 1,\n  \"risk\": 1,\n  \"recommendation\": \"Recommended next step\",\n  \"assumptions\": \"Semicolon-separated assumptions\",\n  \"governance_concerns\": \"Semicolon-separated concerns\"\n}",
+        "options": {
+          "systemPromptTemplate": "You are assisting a Business Analyst in the AI and Innovation team of an EdTech company.\n\nYour task is to perform a preliminary assessment of a submitted business or product opportunity. Assess the underlying problem and opportunity, not merely the proposed technology.\n\nConsider whether process redesign, conventional automation, analytics, an existing product capability, or a non-AI solution could address the problem more safely, simply, or economically than generative AI.\n\nGENERAL RULES\n\n- Do not invent facts, evidence, strategic priorities, costs, user numbers, technical capabilities, or regulatory conclusions.\n- Base every score only on information contained in the submission.\n- Treat unsupported claims as assumptions, not facts.\n- Missing information must reduce evidence strength and confidence in related scores.\n- All scores must be integers from 1 to 5.\n- A high risk score means greater risk.\n- Do not calculate a priority score or make a final approval decision.\n- Do not recommend immediate full implementation.\n- Human review is required before any pilot, procurement, deployment, or customer-facing release.\n\nOPPORTUNITY TYPE\n\nClassify the opportunity as exactly one of:\n\n- internal_efficiency\n- product_improvement\n- both\n\nSCORING RULES\n\n1. Strategic alignment\n\nScore 1:\nNo clear connection to a company, product, customer, learner, or operational objective.\n\nScore 2:\nA possible connection exists, but the strategic relevance is weak or unclear.\n\nScore 3:\nThe opportunity plausibly supports a relevant objective, but the alignment has not been validated.\n\nScore 4:\nThe opportunity clearly supports an identified business or product objective.\n\nScore 5:\nThe submission explicitly identifies a validated strategic priority and provides evidence of direct alignment.\n\nDo not award 5 merely because an idea involves AI, innovation, many users, or a potentially useful capability.\n\n2. Expected value\n\nScore 1:\nThe benefit is negligible, undefined, or represents fewer than approximately 10 staff hours of benefit per year with no other material outcome.\n\nScore 2:\nA small local benefit is plausible, but the impact is limited or unquantified.\n\nScore 3:\nA meaningful departmental or product benefit is plausible, but important assumptions remain.\n\nScore 4:\nA significant operational, customer, product, financial, or learner benefit is supported by relevant evidence.\n\nScore 5:\nA substantial company-wide or customer outcome is supported by strong quantitative or qualitative evidence.\n\nHigh feasibility must not increase the expected-value score.\n\n3. Reach\n\nScore 1:\nReach is unknown, fewer than approximately 20 people are affected, or the process is infrequent and local.\n\nScore 2:\nOne small team or a limited user group is affected.\n\nScore 3:\nMultiple teams or a moderate, clearly defined customer or learner group is affected.\n\nScore 4:\nA large business area, product segment, customer group, or learner population is affected.\n\nScore 5:\nA large proportion of employees, customers, or learners is affected, and the scale is supported by credible evidence.\n\nA statement such as “all employees,” “all customers,” or “all learners” is not evidence of actual reach. Transaction volume is not automatically the same as the number of people benefiting.\n\n4. Evidence strength\n\nScore 1:\nNo measurements, research, stakeholder interviews, process evidence, or reliable supporting information is provided.\n\nScore 2:\nThe submission contains only opinions, estimates, requests, or anecdotal evidence.\n\nScore 3:\nSome relevant evidence is available, but the sample is limited or important gaps remain.\n\nScore 4:\nStrong qualitative or quantitative evidence supports the problem and likely benefit.\n\nScore 5:\nThe problem, baseline, scale, and expected benefit have been validated using multiple reliable sources.\n\n5. Feasibility\n\nScore 1:\nThe requirements, data, systems, ownership, and delivery approach are unknown.\n\nScore 2:\nThe idea may be technically possible, but significant data, integration, capability, or operational barriers exist.\n\nScore 3:\nThe approach is technically plausible, but dependencies and assumptions require investigation.\n\nScore 4:\nThe required systems and data appear available, with manageable dependencies.\n\nScore 5:\nThe required data, systems, integration routes, ownership, delivery capability, and operating process are clearly available and evidenced.\n\nDo not award a high feasibility score merely because similar technology exists elsewhere.\n\n6. Risk\n\nScore 1:\nInternal, reversible and low-impact use with no sensitive data and effective human checking.\n\nScore 2:\nLimited operational risk with non-sensitive or aggregated data and clear human oversight.\n\nScore 3:\nCustomer-facing use, personal-data processing, material reliance on generated output, or moderate privacy, security, accessibility, accuracy, or change risk.\n\nScore 4:\nSignificant privacy, security, accessibility, bias, safeguarding, legal, reputational, or operational risk.\n\nScore 5:\nBiometric surveillance, children’s sensitive data, automated high-impact decisions, denial of service or access, disciplinary consequences, automated cheating allegations, or serious potential harm.\n\nMANDATORY RISK RULES\n\n- Assign risk 5 when an opportunity includes facial recognition, facial images, biometric identification, webcam surveillance of children, automated cheating allegations, or automatically blocking learners from assessments or services.\n- Assign risk of at least 4 when an opportunity processes children’s personal data, makes high-impact decisions, or could materially affect access to education.\n- Assign risk of at least 3 to customer-facing generative AI that could provide inaccurate or misleading information.\n- Do not assign a high risk score merely because information is missing. Reflect missing information through a low evidence-strength score and explicit assumptions.\n- Human oversight does not eliminate underlying privacy, safeguarding, bias, accessibility, or legal risk.\n\nEVIDENCE CONSTRAINTS\n\nWhen evidence strength is 1:\n\n- strategic alignment cannot exceed 3;\n- expected value cannot exceed 2;\n- reach cannot exceed 2;\n- feasibility cannot exceed 3.\n\nWhen evidence strength is 2:\n\n- expected value cannot exceed 3;\n- reach cannot exceed 3;\n- feasibility cannot exceed 3 unless technical availability is explicitly evidenced.\n\nA claimed audience or desired benefit must not be treated as validated evidence.\n\nRECOMMENDATION RULES\n\nReturn exactly one recommended next action. Do not combine several generic actions into a list.\n\nApply these rules in order:\n\n1. If risk is 4 or 5, recommend a governance review before any proof of concept or pilot.\n2. Otherwise, if evidence strength is 1 or 2, recommend targeted discovery to collect the missing evidence.\n3. Otherwise, if feasibility is 1 or 2, recommend a technical and data-feasibility assessment.\n4. Otherwise, if expected value, feasibility, and evidence are sufficiently strong, recommend a controlled proof of concept or human-supervised pilot.\n5. Otherwise, recommend placing the opportunity in the innovation backlog.\n\nMake the recommendation specific to the submitted opportunity. State the principal activity, relevant stakeholders, and evidence or control required.\n\nExamples of appropriately scoped recommendations include:\n\n- Conduct stakeholder interviews and measure the current process baseline.\n- Complete privacy, safeguarding, accessibility, security, legal, and responsible-AI governance review.\n- Validate data availability and integration feasibility with engineering and data teams.\n- Run a controlled proof of concept using non-sensitive or synthetic data.\n- Run a limited human-supervised pilot with defined success and stopping criteria.\n- Place the opportunity in the innovation backlog because its current value and reach are limited.\n\nOUTPUT REQUIREMENTS\n\nReturn only the fields defined in the Information Extractor output schema.\n\nFor summary:\n- Write a concise, neutral opportunity statement.\n- Focus on the problem, affected users, desired outcome, and relevant evidence.\n- Do not present an unvalidated solution as the answer.\n\nFor opportunity_type:\n- Return exactly internal_efficiency, product_improvement, or both.\n\nFor assumptions:\n- Return the important unsupported assumptions as one semicolon-separated string.\n- If no material assumptions exist, return “None identified”.\n\nFor governance_concerns:\n- Return the relevant privacy, security, safeguarding, accessibility, bias, legal, ethical, operational, or reputational concerns as one semicolon-separated string.\n- If no material governance concerns are evident, return “No material concerns identified at initial assessment”.\n\nFor recommendation:\n- Return exactly one specific next action.\n- Do not recommend full implementation.\n- Do not repeat all possible next steps."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        64,
+        96
+      ],
+      "id": "c7e663c7-fb3b-4951-acaf-e60989d6e03b",
+      "name": "Generate BA Assessment"
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:3b",
+        "options": {
+          "temperature": 0.1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        136,
+        328
+      ],
+      "id": "b15835d3-b1c2-49e4-8897-2af8b75b14ff",
+      "name": "Ollama Chat Model"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6867161c-4162-431f-b370-a120c397893a",
+              "name": "title",
+              "value": "={{ $('Opportunity Intake').first().json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "5c04602a-8216-4c8d-8482-542283939628",
+              "name": "business_area",
+              "value": "={{ $('Opportunity Intake').first().json.business_area }}",
+              "type": "string"
+            },
+            {
+              "id": "0a9fe52a-266f-4147-b99f-9e55ae5cdafd",
+              "name": "problem",
+              "value": "={{ $('Opportunity Intake').first().json.problem }}",
+              "type": "string"
+            },
+            {
+              "id": "c378d6cd-c823-4344-8965-97429c13d7b0",
+              "name": "current_process",
+              "value": "={{ $('Opportunity Intake').first().json.current_process }}",
+              "type": "string"
+            },
+            {
+              "id": "968c6ffa-cec3-4206-ab0b-1ec48ee6d1b9",
+              "name": "desired_outcome",
+              "value": "={{ $('Opportunity Intake').first().json.desired_outcome }}",
+              "type": "string"
+            },
+            {
+              "id": "4a07d0d5-aa73-4d6e-97c9-f4b102b97620",
+              "name": "affected_users",
+              "value": "={{ $('Opportunity Intake').first().json.effected_user }}",
+              "type": "string"
+            },
+            {
+              "id": "a5c97206-8fe7-48ff-9c66-b6475db78d1d",
+              "name": "volume",
+              "value": "={{ $('Opportunity Intake').first().json.volume }}",
+              "type": "number"
+            },
+            {
+              "id": "8c106fdf-0b4f-49eb-b204-310d60789aea",
+              "name": "systems",
+              "value": "={{ $('Opportunity Intake').first().json.systems }}",
+              "type": "string"
+            },
+            {
+              "id": "0c16ba69-78c8-4b47-a028-8a367ce9be5b",
+              "name": "data_required",
+              "value": "={{ $('Opportunity Intake').first().json.data_required }}",
+              "type": "string"
+            },
+            {
+              "id": "6e6ecab9-ea17-4c8f-866d-df1d3e0a0220",
+              "name": "supporting_evidence",
+              "value": "={{ $('Opportunity Intake').first().json.supporting_evidence }}",
+              "type": "string"
+            },
+            {
+              "id": "1a575f00-bd1b-4326-8308-a07a77e4c0c6",
+              "name": "summary",
+              "value": "={{ $json.output.summary }}",
+              "type": "string"
+            },
+            {
+              "id": "488fcaff-361f-4dc4-830c-caf6fb4e3a2e",
+              "name": "opportunity_type",
+              "value": "={{ $json.output.opportunity_type }}",
+              "type": "string"
+            },
+            {
+              "id": "177406e2-788e-4ef5-a8cd-a717231b0234",
+              "name": "strategic_alignment",
+              "value": "={{ $json.output.strategic_alignment }}",
+              "type": "number"
+            },
+            {
+              "id": "705ab5f5-5288-4d1b-be1a-f3793439142a",
+              "name": "expected_value",
+              "value": "={{ $json.output.expected_value }}",
+              "type": "number"
+            },
+            {
+              "id": "6a1050c5-51a3-425f-9b4a-4ced043ed54d",
+              "name": "reach",
+              "value": "={{ $json.output.reach }}",
+              "type": "number"
+            },
+            {
+              "id": "205fc12c-ed0f-4465-9085-15883c3a2ac6",
+              "name": "evidence_strength",
+              "value": "={{ $json.output.evidence_strength }}",
+              "type": "number"
+            },
+            {
+              "id": "5e4c53d9-f26f-4e3b-ac0f-f038bc2beaf4",
+              "name": "feasibility",
+              "value": "={{ $json.output.feasibility }}",
+              "type": "number"
+            },
+            {
+              "id": "95489163-7713-4ebc-b4a1-169d71c95ae8",
+              "name": "risk",
+              "value": "={{ $json.output.risk }}",
+              "type": "number"
+            },
+            {
+              "id": "12e3b3d0-7efd-454e-827f-eb3ff68aa224",
+              "name": "recommendation",
+              "value": "={{ $json.output.recommendation }}",
+              "type": "string"
+            },
+            {
+              "id": "d64ac312-ebf5-4b33-a286-53958aa286d0",
+              "name": "assumptions",
+              "value": "={{ $json.output.assumptions }}",
+              "type": "string"
+            },
+            {
+              "id": "b85b6cdf-297c-450b-84d4-7c23da24b8eb",
+              "name": "governance_concerns",
+              "value": "={{ $json.output.governance_concerns }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        416,
+        96
+      ],
+      "id": "e323a75b-8167-44d2-80f4-3b9cb3eb77f6",
+      "name": "Assemble Portfolio Record"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.decision }}",
+                    "rightValue": "Governance review required",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "b14fdd9e-9614-46a1-ac61-3c93fbdda53e"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Governance"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "0c0fb7d5-c24c-4b74-9183-31c5bfe81e16",
+                    "leftValue": "={{ $json.decision }}",
+                    "rightValue": "More discovery required",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "More Discovery"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "d09d56d6-6f41-4609-9a2e-215c95f485cc",
+                    "leftValue": "={{ $json.decision }}",
+                    "rightValue": "Candidate for pilot",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Pilot Candidate"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "324cd8df-3982-46f9-bd0b-f8744a61bbdf",
+                    "leftValue": "={{ $json.decision }}",
+                    "rightValue": "Proceed to discovery",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Proceed to Discovery"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "Backlog"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        864,
+        48
+      ],
+      "id": "d0d5e280-254a-49b6-9246-a49ba02d69ae",
+      "name": "Route Decision"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e4c81f77-be56-4d45-9b90-0fdd37c55686",
+              "name": "status",
+              "value": "Pilot candidate—approval pending",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1088,
+        96
+      ],
+      "id": "ee1585be-15b3-4707-a3df-b5be7586e7d9",
+      "name": "Set Pilot Status"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3c621a42-1c61-41f8-a018-f722d6989504",
+              "name": "status",
+              "value": "Ready for discovery",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1088,
+        288
+      ],
+      "id": "16c1cd5d-a9af-49f9-a0d2-5b1fc2ff42b2",
+      "name": "Set Proceed Status"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0e5f0be5-1101-4734-b4b8-49dc777a316c",
+              "name": "status",
+              "value": "Innovation backlog",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1088,
+        480
+      ],
+      "id": "e6fa26e4-5fc9-400d-a813-71e46c634246",
+      "name": "Set Backlog Status"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "39ec58cd-5c20-44a5-9bb8-63492aead764",
+              "name": "status",
+              "value": "Awaiting governance review",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1088,
+        -288
+      ],
+      "id": "b99a5724-a9f9-42bb-8c0f-9d0cf455deb3",
+      "name": "Set Governance Status1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "80e64beb-0913-41a7-a73e-eb80da74fa63",
+              "name": "status",
+              "value": "Discovery required",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1088,
+        -96
+      ],
+      "id": "a8c913b7-950d-4a2b-b1fe-54098a43caf4",
+      "name": "Set Discovery Status"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Calculate Priority": {
+      "main": [
+        [
+          {
+            "node": "Route Decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Opportunity Intake": {
+      "main": [
+        [
+          {
+            "node": "Generate BA Assessment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate BA Assessment": {
+      "main": [
+        [
+          {
+            "node": "Assemble Portfolio Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate BA Assessment",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assemble Portfolio Record": {
+      "main": [
+        [
+          {
+            "node": "Calculate Priority",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Decision": {
+      "main": [
+        [
+          {
+            "node": "Set Governance Status1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Discovery Status",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Pilot Status",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Proceed Status",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Backlog Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Pilot Status": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Proceed Status": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Backlog Status": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Governance Status1": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Discovery Status": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "tags": []
+}

@@ -1,0 +1,42 @@
+# Secrets and credentials — never commit
+.env
+.env.*
+*.env
+secrets/
+credentials.json
+*credential*.json
+*.pem
+*.key
+*.pfx
+*.p12
+*token*
+*secret*
+id_rsa*
+
+# n8n local data and credentials
+.n8n/
+n8n_data/
+*.sqlite
+database.sqlite
+
+# OS and editor cruft
+.DS_Store
+Thumbs.db
+Desktop.ini
+.idea/
+.vscode/
+*.swp
+*~
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Logs and temp
+*.log
+tmp/
+temp/
+
+# Local screenshots staging (add finished ones deliberately)
+assets/*-raw.png
+assets/_unscrubbed/
